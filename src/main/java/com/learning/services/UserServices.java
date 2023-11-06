@@ -24,7 +24,7 @@ public class UserServices {
     }
 
     public Optional<UserModel> getUserById(Long id) {
-        return userRepository.findById(id); 
+        return userRepository.findById(id);
     }
 
     public UserModel updateUser(Long id,UserModel userData) {

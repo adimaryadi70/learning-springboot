@@ -9,11 +9,11 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,8 +44,15 @@ public class UserController {
     private UserRepository userRepository;
 
     @PostMapping
-    public UserModel createUser(@RequestBody UserModel user) {
-        return userServices.createUser(user);
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserModel user) {
+        try {
+            ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(utility.responseSuccess(userServices.createUser(user)), HttpStatus.OK);            
+            return responseEntity;
+        } catch (Exception e) {
+            // TODO: handle exception
+            return new ResponseEntity<>(utility.responseError(e),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        // return userServices.createUser(user);
     }
 
     // @GetMapping
@@ -82,17 +89,50 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public Optional<UserModel> getUserById(@PathVariable Long id) {
-        return userServices.getUserById(id);
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {
+        try {
+            var userDetail = userServices.getUserById(id);
+            ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(utility.responseSuccess(userDetail), HttpStatus.OK);
+            if (userDetail.isEmpty()) {
+                return new ResponseEntity<>(utility.responseInfo("Data Tidak ditemukan Tidak di temukan"),HttpStatus.OK);
+            }
+            return responseEntity;
+        } catch (Exception e) {
+            // TODO: handle exception
+            return new ResponseEntity<>(utility.responseError(e),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        // return userServices.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public UserModel updateUser(@PathVariable Long id, @RequestBody UserModel userData) {
-        return userServices.updateUser(id, userData);
+    public  ResponseEntity<Map<String, Object>> updateUser(@PathVariable Long id, @RequestBody UserModel userData) {
+        try {
+            var updateUser =  userServices.updateUser(id, userData);
+            ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(utility.responseSuccess(updateUser), HttpStatus.OK);
+            
+            if (updateUser == null) {
+                return new ResponseEntity<>(utility.responseInfo("Data Perbaharui Tidak di temukan"),HttpStatus.OK);
+            }
+            return responseEntity;
+        } catch (Exception e) {
+            // TODO: handle exception
+            return new ResponseEntity<>(utility.responseError(e),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        // return userServices.updateUser(id, userData);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userServices.deleteUser(id);
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Long id) {
+        try {
+            Map<String, Object> data = new HashMap<>();
+            userServices.deleteUser(id);
+            data.put("status","Deleted");
+            ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(utility.responseSuccess(data), HttpStatus.OK);
+            return responseEntity;
+        } catch (Exception e) {
+            // TODO: handle exception
+            return new ResponseEntity<>(utility.responseError(e),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        // userServices.deleteUser(id);
     }
 }

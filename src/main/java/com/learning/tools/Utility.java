@@ -35,5 +35,20 @@ public class Utility {
         response.put("message", e.getMessage());
         return response;
     }
+
+    public Map<String, Object> responseInfo(String message) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", "1A");
+        response.put("message", message);
+        return response;
+    }
+
+    public Map<String, Object> responseSuccess(Object data) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", "00");
+        response.put("data", data);
+        response.put("message", "Success");
+        return response;
+    }
     
 }

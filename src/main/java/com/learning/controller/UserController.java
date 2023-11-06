@@ -74,20 +74,10 @@ public class UserController {
             }
 
             users = pagination.getContent();
-            Map<String, Object> response = new HashMap<>();
-            response.put("code", "00");
-            response.put("data", users);
-            response.put("message", "Sukses");
-            response.put("currentPage", pagination.getNumber()+1);
-            response.put("totalItems", pagination.getTotalElements());
-            response.put("totalPages", pagination.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(utility.responseSuccesGet(users,pagination),HttpStatus.OK);
         } catch (Exception e) {
             // TODO: handle exception
-            Map<String, Object> response = new HashMap<>();
-            response.put("code", "99");
-            response.put("message", "Kesalahan Server => "+e.getMessage());
-            return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(utility.responseError(e),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

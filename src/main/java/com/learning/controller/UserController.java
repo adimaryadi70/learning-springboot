@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.learning.interfaces.UserRepository;
 import com.learning.model.user.UserModel;
 import com.learning.services.UserServices;
+import com.learning.tools.Cryptograpy;
 import com.learning.tools.Utility;
 
 @RestController
@@ -37,6 +36,7 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     Utility utility = new Utility();
+    Cryptograpy crypto = new Cryptograpy();
     
     @Autowired
     private UserServices userServices;
@@ -46,7 +46,10 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserModel user) {
         try {
-            ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(utility.responseSuccess(userServices.createUser(user)), HttpStatus.OK);            
+            user.setUsername(utility.generateUser(user.getName()));
+            user.setPassword(crypto.sha256(user.getPassword()));
+            var result = userServices.createUser(user);
+            ResponseEntity<Map<String, Object>> responseEntity = new ResponseEntity<>(utility.responseSuccess(result), HttpStatus.OK);            
             return responseEntity;
         } catch (Exception e) {
             // TODO: handle exception

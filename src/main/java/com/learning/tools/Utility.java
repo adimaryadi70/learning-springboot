@@ -3,11 +3,16 @@ package com.learning.tools;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
 public class Utility {
+    private static final Logger logger = LoggerFactory.getLogger(Utility.class);
+
     public Sort.Direction getSortDirection(String direction) {
         if (direction.equals("asc")) {
             return Sort.Direction.ASC;
@@ -51,4 +56,28 @@ public class Utility {
         return response;
     }
     
+    public String generateUser(String name) {
+        int limitText = 5;
+        if (name.length() > limitText) {
+            name = name.substring(0, limitText);
+        }
+        String nameUppercase = name.toUpperCase();
+        return nameUppercase+generateNumber();
+    }
+
+    public String generateNumber() {
+        Random rand = new Random();
+        int restRandom = 0;
+        for (int i = 1; i < 10; i++) {
+            restRandom = rand.nextInt((9999) + 1) + 10;
+        }
+        String numberToString = Integer.toString(restRandom);
+        String numberZero = "00000000000000000000000000000000";
+        String limitRandom = numberToString;
+        if (numberToString.length() < 4) {
+            numberToString = numberToString+numberZero;
+            limitRandom = numberToString.substring(0, 4);
+        }
+        return limitRandom;
+    }
 }
